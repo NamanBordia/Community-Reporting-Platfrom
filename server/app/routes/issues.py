@@ -6,6 +6,7 @@ from app.models.admin import Admin
 from app.models.issue import Issue, Comment, Upvote
 from app.services.email_service import send_issue_status_update
 from app.utils.file_upload import save_image
+from app.utils.cloudinary_upload import upload_image_to_cloudinary
 from app.utils.validators import validate_issue_data
 from datetime import datetime
 import os
@@ -140,8 +141,19 @@ def create_issue():
         image_url = None
         if image_file:
             try:
-                image_url = save_image(image_file, current_app.config['UPLOAD_FOLDER'])
+                # Try Cloudinary first, fallback to local storage
+                cloudinary_enabled = os.getenv('CLOUDINARY_CLOUD_NAME') and \
+                                   os.getenv('CLOUDINARY_API_KEY') and \
+                                   os.getenv('CLOUDINARY_API_SECRET')
+                
+                if cloudinary_enabled:
+                    image_url = upload_image_to_cloudinary(image_file)
+                    print(f"✓ Image uploaded to Cloudinary: {image_url}")
+                else:
+                    image_url = save_image(image_file, current_app.config['UPLOAD_FOLDER'])
+                    print(f"⚠️  Image saved locally (Cloudinary not configured): {image_url}")
             except Exception as e:
+                print(f"Image upload error: {str(e)}")
                 return jsonify({'error': f'Failed to upload image: {str(e)}'}), 400
         
         # Create issue
