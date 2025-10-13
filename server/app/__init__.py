@@ -111,7 +111,7 @@ def create_app():
     def handle_preflight():
         if request.method == "OPTIONS":
             response = jsonify({'status': 'ok'})
-            response.headers.add('Access-Control-Allow-Origin', 'http://localhost:3000')
+            response.headers.add('Access-Control-Allow-Origin', FRONTEND_URL)
             response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization,Accept,Origin,X-Requested-With')
             response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
             response.headers.add('Access-Control-Max-Age', '3600')
