@@ -21,10 +21,17 @@ def create_app():
     
     # Configuration
     app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'dev-secret-key')
-    password = quote_plus('Naman@123')  # URL encode the password
-    app.config['SQLALCHEMY_DATABASE_URI'] = f'mysql+pymysql://root:{password}@localhost/community_reporting'
+    
+    # Database configuration - use DATABASE_URL from environment or fallback to local
+    database_url = os.getenv('DATABASE_URL')
+    if not database_url:
+        # Local development fallback
+        password = quote_plus('Naman@123')
+        database_url = f'mysql+pymysql://root:{password}@localhost/community_reporting'
+    
+    app.config['SQLALCHEMY_DATABASE_URI'] = database_url
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-    app.config['JWT_SECRET_KEY'] = os.getenv('SECRET_KEY', 'jwt-secret-key')
+    app.config['JWT_SECRET_KEY'] = os.getenv('JWT_SECRET_KEY', os.getenv('SECRET_KEY', 'jwt-secret-key'))
     app.config['JWT_ACCESS_TOKEN_EXPIRES'] = False  # For development
     
     # Mail configuration - set defaults if not provided
