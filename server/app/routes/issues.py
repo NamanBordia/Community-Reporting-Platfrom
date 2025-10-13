@@ -90,7 +90,13 @@ def get_issues():
         }), 200
         
     except Exception as e:
-        return jsonify({'error': 'Failed to fetch issues'}), 500
+        print(f"ERROR in get_issues: {str(e)}")
+        import traceback
+        traceback.print_exc()
+        return jsonify({
+            'error': 'Failed to fetch issues',
+            'details': str(e)
+        }), 500
 
 @issues_bp.route('/', methods=['POST', 'OPTIONS'])
 @jwt_required()

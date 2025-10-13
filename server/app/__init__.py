@@ -115,6 +115,22 @@ def create_app():
     def favicon():
         return app.send_static_file('favicon.ico') if os.path.exists(os.path.join(app.static_folder, 'favicon.ico')) else ('', 204)
     
+    # Health check endpoint
+    @app.route('/health')
+    def health_check():
+        try:
+            # Test database connection
+            db.session.execute(db.text('SELECT 1'))
+            db_status = 'connected'
+        except Exception as e:
+            db_status = f'error: {str(e)}'
+        
+        return jsonify({
+            'status': 'ok',
+            'database': db_status,
+            'environment': os.getenv('FRONTEND_URL', 'not set')
+        })
+    
     # Error handlers
     @app.errorhandler(404)
     def not_found(error):
