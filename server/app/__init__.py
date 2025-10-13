@@ -38,10 +38,13 @@ def create_app():
     app.config['UPLOAD_FOLDER'] = os.getenv('UPLOAD_FOLDER', 'uploads')
     app.config['MAX_CONTENT_LENGTH'] = int(os.getenv('MAX_CONTENT_LENGTH', 16 * 1024 * 1024))  # 16MB
     
+    # Get frontend URL from environment
+    FRONTEND_URL = os.getenv('FRONTEND_URL', 'http://localhost:3000')
+    
     # Initialize extensions with CORS
     CORS(app, 
          resources={r"/*": {
-             "origins": "http://localhost:3000",
+             "origins": [FRONTEND_URL, "http://localhost:3000"],
              "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
              "allow_headers": ["Content-Type", "Authorization", "Accept", "Origin", "X-Requested-With"],
              "expose_headers": ["Content-Type", "Authorization"],
