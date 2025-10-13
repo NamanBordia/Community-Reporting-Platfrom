@@ -51,7 +51,7 @@ def create_app():
     # Initialize extensions with CORS
     CORS(app, 
          resources={r"/*": {
-             "origins": [FRONTEND_URL, "http://localhost:3000"],
+             "origins": FRONTEND_URL,
              "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
              "allow_headers": ["Content-Type", "Authorization", "Accept", "Origin", "X-Requested-With"],
              "expose_headers": ["Content-Type", "Authorization"],
