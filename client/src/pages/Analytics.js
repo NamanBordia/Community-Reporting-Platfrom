@@ -50,8 +50,8 @@ const Analytics = () => {
     try {
       const token = localStorage.getItem('adminToken') || localStorage.getItem('token');
       
-      // Use direct Flask server URLs to bypass proxy issues
-      const baseUrl = 'http://localhost:5000';
+      // Use API_URL from environment
+      const baseUrl = process.env.REACT_APP_API_URL?.replace('/api', '') || 'http://localhost:5000';
       
       // Fetch all analytics data
       const endpoints = [

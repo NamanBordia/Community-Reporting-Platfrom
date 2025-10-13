@@ -162,11 +162,12 @@ const IssueDetail = () => {
 
   // Image rendering helper
   const getImageSrc = (issue) => {
+    const API_BASE = process.env.REACT_APP_API_URL?.replace('/api', '') || 'http://localhost:5000';
     if (issue.image_url) {
-      return issue.image_url.startsWith('http') ? issue.image_url : `http://localhost:5000/uploads/${issue.image_url}`;
+      return issue.image_url.startsWith('http') ? issue.image_url : `${API_BASE}/uploads/${issue.image_url}`;
     }
     if (issue.image) {
-      return issue.image.startsWith('http') ? issue.image : `http://localhost:5000/uploads/${issue.image}`;
+      return issue.image.startsWith('http') ? issue.image : `${API_BASE}/uploads/${issue.image}`;
     }
     return null;
   };

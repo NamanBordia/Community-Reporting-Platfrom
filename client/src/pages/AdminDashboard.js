@@ -4,6 +4,8 @@ import { useAuth } from '../contexts/AuthContext';
 import { toast } from 'react-toastify';
 import LoadingSpinner from '../components/LoadingSpinner';
 
+const API_BASE = process.env.REACT_APP_API_URL?.replace('/api', '') || 'http://localhost:5000';
+
 const AdminDashboard = () => {
   const { user, logout } = useAuth();
   const [stats, setStats] = useState(null);
@@ -25,10 +27,9 @@ const AdminDashboard = () => {
   const fetchDashboardData = async () => {
     try {
       const token = localStorage.getItem('adminToken') || localStorage.getItem('token');
-      const baseUrl = 'http://localhost:5000';
       
       // Fetch overview stats
-      const statsResponse = await fetch(`${baseUrl}/api/analytics/overview`, {
+      const statsResponse = await fetch(`${API_BASE}/api/analytics/overview`, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -41,7 +42,7 @@ const AdminDashboard = () => {
       }
 
       // Fetch recent issues
-      const issuesResponse = await fetch(`${baseUrl}/api/issues?page=1&per_page=5&status=all`, {
+      const issuesResponse = await fetch(`${API_BASE}/api/issues?page=1&per_page=5&status=all`, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -64,9 +65,8 @@ const AdminDashboard = () => {
     try {
       setIssuesLoading(true);
       const token = localStorage.getItem('adminToken') || localStorage.getItem('token');
-      const baseUrl = 'http://localhost:5000';
       
-      const url = `${baseUrl}/api/issues?page=${page}&per_page=10${status !== 'all' ? `&status=${status}` : ''}`;
+      const url = `${API_BASE}/api/issues?page=${page}&per_page=10${status !== 'all' ? `&status=${status}` : ''}`;
       
       const response = await fetch(url, {
         headers: {
@@ -92,9 +92,8 @@ const AdminDashboard = () => {
   const updateIssueStatus = async (issueId, newStatus) => {
     try {
       const token = localStorage.getItem('adminToken') || localStorage.getItem('token');
-      const baseUrl = 'http://localhost:5000';
       
-      const response = await fetch(`${baseUrl}/api/issues/${issueId}`, {
+      const response = await fetch(`${API_BASE}/api/issues/${issueId}`, {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`,
