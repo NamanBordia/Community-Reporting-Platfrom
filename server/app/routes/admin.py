@@ -9,6 +9,22 @@ from datetime import datetime, timedelta
 
 admin_bp = Blueprint('admin', __name__)
 
+@admin_bp.route('/', methods=['GET'])
+def admin_info():
+    """Admin API info endpoint"""
+    return jsonify({
+        'message': 'Admin API',
+        'version': '1.0',
+        'endpoints': {
+            'users': '/api/admin/users',
+            'pending_issues': '/api/admin/issues/pending',
+            'dashboard_stats': '/api/admin/dashboard/stats',
+            'bulk_update': '/api/admin/issues/bulk-update',
+            'assign_issue': '/api/admin/issues/<id>/assign',
+            'generate_report': '/api/admin/reports/generate'
+        }
+    }), 200
+
 def admin_required(f):
     """Decorator to check if user is admin"""
     def decorated_function(*args, **kwargs):
