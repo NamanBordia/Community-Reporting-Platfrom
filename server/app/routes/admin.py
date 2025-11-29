@@ -28,13 +28,30 @@ def admin_info():
 def admin_required(f):
     """Decorator to check if user is admin"""
     def decorated_function(*args, **kwargs):
-        user_id = get_jwt_identity()
-        user = User.query.get(user_id)
+        identity = get_jwt_identity()
         
-        if not user or not user.is_admin():
-            return jsonify({'error': 'Admin access required'}), 403
+        # Check if identity is admin format (admin:id)
+        if isinstance(identity, str) and identity.startswith('admin:'):
+            # Extract admin ID
+            try:
+                from app.models.admin import Admin
+                admin_id = int(identity.split(':')[1])
+                admin = Admin.query.get(admin_id)
+                if admin:
+                    return f(*args, **kwargs)
+            except (ValueError, IndexError):
+                pass
         
-        return f(*args, **kwargs)
+        # Check if regular user is admin
+        try:
+            user_id = int(identity)
+            user = User.query.get(user_id)
+            if user and user.is_admin():
+                return f(*args, **kwargs)
+        except (ValueError, TypeError):
+            pass
+        
+        return jsonify({'error': 'Admin access required'}), 403
     
     decorated_function.__name__ = f.__name__
     return decorated_function
