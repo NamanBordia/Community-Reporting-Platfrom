@@ -138,6 +138,29 @@ def create_app():
             'environment': os.getenv('FRONTEND_URL', 'not set')
         })
     
+    # Database initialization endpoint
+    @app.route('/init-db')
+    def init_database():
+        try:
+            db.create_all()
+            
+            # Get table names
+            from sqlalchemy import inspect
+            inspector = inspect(db.engine)
+            tables = inspector.get_table_names()
+            
+            return jsonify({
+                'status': 'success',
+                'message': 'Database tables created successfully',
+                'tables': tables,
+                'count': len(tables)
+            })
+        except Exception as e:
+            return jsonify({
+                'status': 'error',
+                'message': str(e)
+            }), 500
+    
     # Error handlers
     @app.errorhandler(404)
     def not_found(error):
