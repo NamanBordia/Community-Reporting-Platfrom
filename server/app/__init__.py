@@ -161,6 +161,50 @@ def create_app():
                 'message': str(e)
             }), 500
     
+    # Create admin account endpoint (one-time setup)
+    @app.route('/create-admin/<secret_key>')
+    def create_admin_account(secret_key):
+        # Simple security check
+        if secret_key != os.getenv('SECRET_KEY', 'dev-secret-key'):
+            return jsonify({'error': 'Unauthorized'}), 401
+        
+        try:
+            from app.models.admin import Admin
+            
+            # Check if admin already exists
+            existing_admin = Admin.query.filter_by(username='admin').first()
+            if existing_admin:
+                return jsonify({
+                    'status': 'exists',
+                    'message': 'Admin account already exists'
+                })
+            
+            # Create admin
+            admin = Admin(
+                username='admin',
+                email='admin@community-reporting.com',
+                password='Admin@123'
+            )
+            
+            db.session.add(admin)
+            db.session.commit()
+            
+            return jsonify({
+                'status': 'success',
+                'message': 'Admin account created successfully',
+                'admin': {
+                    'username': admin.username,
+                    'email': admin.email,
+                    'password': 'Admin@123'
+                }
+            })
+        except Exception as e:
+            db.session.rollback()
+            return jsonify({
+                'status': 'error',
+                'message': str(e)
+            }), 500
+    
     # Error handlers
     @app.errorhandler(404)
     def not_found(error):
