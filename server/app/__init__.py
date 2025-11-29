@@ -182,9 +182,9 @@ def create_app():
             # Create admin
             admin = Admin(
                 username='admin',
-                email='admin@community-reporting.com',
-                password='Admin@123'
+                email='admin@community-reporting.com'
             )
+            admin.set_password('Admin@123')
             
             db.session.add(admin)
             db.session.commit()
